@@ -9,11 +9,11 @@ export type FeatureMention = {
 }
 
 // These are bounded English wording rules, not a grammar or contract parser.
-const addition = /\b(?:add|build|implement|integrate|include|enable|create|develop|introduce|install|want|need|require|provide|support|allow|accept|purchase|buy|sell|book|schedule|would like)\b/g
+const addition = /\b(?:add|addition|build|implement|integrate|include|enable|create|develop|introduce|install|want|need|require|provide|support|allow|accept|purchase|buy|sell|book|schedule|would like)\b/g
 const exclusion = /\b(?:(?:do|does|did|will|would|should|can|could|must)\s+not|cannot|never|no|not|without|except|exclude(?:d|s)?|excluding|remove|removing|delete|deleting|omit|omitting|disable|drop|avoid|get rid of)\b/g
 const uncertain = /\b(?:maybe|perhaps|possibly|potentially|might|consider|considering|discuss|explore|whether|if|unless|optional|optionally|later|someday|eventually|future|not sure|not only|not just|not necessarily|not opposed|not against|no objection|instead of|rather than|replace|replacement|either|should we|should i|do we need|do i need|would we need|can you confirm)\b|\bor\b|["\u201c\u201d]|(?:^|\s)'|'(?:\s|$)/
 const modification = /\b(?:change|update|fix|repair|redesign|recolor|restyle|rename|move|keep|retain|existing|already|current)\b|\b(?:button|label|icon|logo|font|colou?r|copy|wording|text|link|screenshot|mockup|mock-up|documentation|tutorial|article|invoice|receipt|terms|policy|example|sample)\b/
-const suffixExclusion = /^\s*(?:(?:is|are|will be|should be)\s+)?(?:not\s+(?:be\s+)?(?:needed|required|included|wanted)|excluded|out of scope|unnecessary)\b|^\s*(?:will|should|must)\s+not\s+be\s+(?:needed|required|included|wanted)\b/
+const suffixExclusion = /^\s*(?:(?:is|are|was|were|will be|should be)\s+)?(?:not\s+(?:be\s+)?(?:needed|required|included|wanted)|excluded|out of scope|unnecessary)\b|^\s*(?:has|have|had)\s+not\s+been\s+(?:included|covered|provided|required|needed)\b|^\s*(?:will|should|must)\s+not\s+be\s+(?:needed|required|included|wanted)\b/
 
 function normalize(text: string): string {
   return text.toLowerCase()
@@ -22,6 +22,11 @@ function normalize(text: string): string {
     .replace(/\bcan't\b/g, 'cannot')
     .replace(/\bisn't\b/g, 'is not')
     .replace(/\baren't\b/g, 'are not')
+    .replace(/\bwasn't\b/g, 'was not')
+    .replace(/\bweren't\b/g, 'were not')
+    .replace(/\bhasn't\b/g, 'has not')
+    .replace(/\bhaven't\b/g, 'have not')
+    .replace(/\bhadn't\b/g, 'had not')
     .replace(/\b(?:we|i)'d like\b/g, 'would like')
     .replace(/\b(don|doesn|didn|wouldn|shouldn|couldn|mustn)'t\b/g, (_, stem: string) => ({
       don: 'do', doesn: 'does', didn: 'did', wouldn: 'would', shouldn: 'should', couldn: 'could', mustn: 'must',
@@ -57,7 +62,7 @@ function clauses(text: string, agreement: boolean): { context: string; qualified
   // Keep lists together so "no store or payments" retains its exclusion.
   // Split a conjunction only when it introduces a new action, not a feature list.
   return text.split(/[.!?;\n\r]+/).flatMap(sentence => {
-    const qualified = /^\s*(?:if|unless|assuming|provided|when)\b/i.test(sentence) || /["\u201c\u201d]|(?:^|\s)'/.test(sentence)
+    const qualified = /^\s*(?:if|unless|assuming|provided|when|maybe|perhaps|possibly|potentially|consider|discuss|explore|should we|do we need|could we)\b/i.test(sentence) || /["\u201c\u201d]|(?:^|\s)'/.test(sentence)
     return sentence.split(/\b(?:but|however|yet)\b|(?=\b(?:without|except)\b)|\band\s+(?=(?:(?:please|also)\s+)*(?:add|build|include|enable|create|implement|integrate|remove|delete|exclude|omit|disable|do not|don't|don\u2019t|no|we (?:want|need)|we do not)\b)/i)
       .flatMap(part => commaClauses(part, agreement))
       .map(part => ({ context: normalize(part), qualified })).filter(part => part.context)
@@ -70,7 +75,7 @@ function lastMatch(pattern: RegExp, text: string): number {
 }
 
 function sharedListExclusion(context: string): boolean {
-  const predicate = /\b(?:is|are|will be|shall be)\s+(?:not\s+(?:included|required|needed)|excluded|out of scope)\s*$/.exec(context)
+  const predicate = /\b(?:(?:is|are|was|were|will be|shall be)\s+(?:not\s+(?:included|required|needed)|excluded|out of scope)|(?:has|have|had)\s+not\s+been\s+(?:included|required|needed))\s*$/.exec(context)
   if (!predicate) return false
   const head = context.slice(0, predicate.index)
   // Only share a trailing predicate across a noun list, never across actions
@@ -98,9 +103,16 @@ function classify(context: string, start: number, end: number, nextStart: number
   )) return 'uncertain'
   if (agreement && sharedListExclusion(context)) return 'excluded'
   if (suffixExclusion.test(after)) return 'excluded'
+  // Passive agreement exclusions: \"booking systems are excluded\" and \"payment integrations are not included\".
+  if (agreement && /^\s*(?:(?:systems?|functionality|features?|services?|integrations?)\s+)?(?:(?:are|is|was|were|will be|shall be)\s+(?:excluded|not included|out of scope)|(?:has|have|had)\s+not\s+been\s+(?:included|covered|provided))\b/.test(after)) return 'excluded'
   // "Do not add" contains an addition verb; the negation still governs it.
   if (negative >= 0) return 'excluded'
-  if (uncertain.test(context) || modification.test(context)) return 'uncertain'
+  if (uncertain.test(context)) return 'uncertain'
+  // A vague 'admin tag' could mean a simple label, not an editing system.
+  if (context.slice(start, end) === 'admin tag' && !/\b(?:edit|editing|manage|managing)\b/.test(context)) return 'uncertain'
+  // An explicitly requested admin editing interface is a new capability, not merely
+  // a request to update existing page text. Avoid treating links/logos as systems.
+  if (modification.test(context) && !(/\b(?:blog|blogging|article pages|page for each article)\b/.test(context) && !/\b(?:link|logo|icon|button|text|copy|example|sample|update|edit)\b/.test(context)) && !(/\b(?:admin|cms|content editor)\b/.test(context) && /\b(?:edit|editing|manage|managing)\b/.test(context) && /\b(?:content|website|web info|site info|information)\b/.test(context) && !/\b(?:link|logo|icon|button|screenshot|mockup)\b/.test(context))) return 'uncertain'
   if (agreement) return 'addition' // A plain deliverable list counts as a mention, never proof of coverage.
   if (positive >= 0) return 'addition'
   // Feature-first phrasing: "Payments are required" / "booking is needed".

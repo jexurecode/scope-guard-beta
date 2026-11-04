@@ -49,7 +49,7 @@ export function WorkspaceTools({ data, notifications, onNavigate, onOpenAnalysis
 
   const openResult = (hit: SearchHit) => {
     if (hit.type === 'analysis') onOpenAnalysis(hit.id)
-    else { onSelectProject(hit.id); onNavigate('projects') }
+    else { onSelectProject(hit.id); onNavigate('project') }
     setPanel(null)
     setQuery('')
   }

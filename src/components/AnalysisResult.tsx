@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, Copy, Info } from 'lucide-react'
+import { AlertTriangle, Check, Copy, Info, CircleCheck, CircleHelp } from 'lucide-react'
 import { LIMITS } from '../lib/workspace'
 import type { Analysis } from '../types/analysis'
 import { StatusBadge } from './StatusBadge'
@@ -33,9 +33,37 @@ export function AnalysisResult({ result, copied, copyReply, onReplyChange }: Pro
                   <p className="font-semibold text-warn-fg">{change.feature}</p>
                   <p className="mt-1.5 text-sm text-fg">{change.explanation}</p>
                   <p className="mt-2 text-xs text-muted">Matched request term: "{change.requestEvidence}"</p>
+                  {change.agreementEvidence && <p className="mt-2 text-xs text-fg"><strong>Agreement evidence:</strong> “{change.agreementEvidence}”</p>}
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {!!result.tasks?.length && (
+          <div>
+            <h4 className="text-sm font-semibold text-fg">Task-by-task assessment ({result.tasks.length})</h4>
+            <p className="mt-1 text-xs text-muted">Preliminary rules-based classification. A likely covered item is not approval, and unmatched tasks need human review.</p>
+            <ol className="mt-3 space-y-3">
+              {result.tasks.map((task, index) => {
+                const possiblyNew = task.verdict === 'potential-change'
+                const likelyCovered = task.verdict === 'likely-covered'
+                const TaskIcon = possiblyNew ? AlertTriangle : likelyCovered ? CircleCheck : CircleHelp
+                return <li key={`${index}-${task.requestEvidence.slice(0, 24)}`} className="rounded-xl border border-line bg-surface p-4 break-words">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <TaskIcon size={17} aria-hidden="true" />
+                    <span className="text-sm font-semibold text-fg">Task {index + 1}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${possiblyNew ? 'bg-warn-bg text-warn-fg' : likelyCovered ? 'bg-info-bg text-info-fg' : 'bg-surface-secondary text-muted'}`}>
+                      {possiblyNew ? 'Potential change' : likelyCovered ? 'Likely covered' : 'Needs review'}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-fg">{task.task}</p>
+                  <p className="mt-2 text-xs leading-5 text-muted">{task.explanation}</p>
+                  {task.agreementEvidence && <p className="mt-2 rounded-md border border-line p-2 text-xs text-fg"><strong>Agreement evidence:</strong> “{task.agreementEvidence}”</p>}
+                  {!task.agreementEvidence && <p className="mt-2 text-xs italic text-muted">No reliable matching agreement clause was found.</p>}
+                </li>
+              })}
+            </ol>
           </div>
         )}
 
@@ -61,7 +89,7 @@ export function AnalysisResult({ result, copied, copyReply, onReplyChange }: Pro
         </div>
 
         <p className="text-xs leading-5 text-muted">
-          Prototype limitation: this checker uses keyword and context rules, not AI or legal analysis. It may miss scope changes or flag requests incorrectly. Always review your agreement yourself.
+          Prototype limitation: this checker uses keyword and context rules (including in mock mode), not a real AI model or legal analysis. It may miss scope changes or flag requests incorrectly. Always review your agreement yourself.
         </p>
       </div>
     </section>

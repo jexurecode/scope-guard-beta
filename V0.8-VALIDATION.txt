@@ -1,0 +1,13 @@
+Scope Guard v0.8 — regression fix 2 validation (2026-11-03)
+
+USER-REPORTED BEFORE FIX: 256 passed / 4 failed, 260 total tests.
+FIXES: restaurant reply names booking; qualified and quoted tasks are not split into definite additions.
+ADDED: 8 regression tests in src/lib/v08-regression.test.ts.
+
+CHECKED HERE:
+- 197 passing Node assertions / 0 failing across 8 compiled test files (custom harness, not Vitest).
+- Global TypeScript 5.8 build check with temporary stubs for missing document parsers.
+- ZIP integrity verified.
+
+NOT CHECKED HERE: full Vitest suite, native Vite build, oxlint, PDF/DOCX browser imports.
+NOTE: stale package-lock.json omitted. Run npm install to generate a current lockfile, then npm test, npm run build, npm run lint, and browser document checks before deploying.

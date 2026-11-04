@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "environment": {
+    "secure": false,
+    "uuid": "undefined",
+    "randomValues": "function"
+  },
+  "checks": [
+    "mobile HTTP project creation",
+    "analysis save",
+    "refresh persistence",
+    "visible failure with existing data preserved when all randomness is unavailable"
+  ],
+  "errors": []
+}

@@ -1,0 +1,10 @@
+{
+  "synthetic": true,
+  "agreementCharacters": 53697,
+  "sentinel": "END OF AGREEMENT - QA SENTINEL 091",
+  "mixedVerdicts": [
+    "likely-covered",
+    "likely-covered",
+    "potential-change"
+  ]
+}

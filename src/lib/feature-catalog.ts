@@ -5,6 +5,7 @@ type Feature = {
 }
 
 export const features: Feature[] = [
+  { name: 'Blog', keywords: ['blog', 'blogging', 'article pages', 'page for each article'] },
   {
     name: 'E-commerce functionality',
     keywords: [
@@ -38,7 +39,11 @@ export const features: Feature[] = [
   },
   {
     name: 'Admin dashboard',
-    keywords: ['dashboard', 'admin panel', 'administration panel', 'back office'],
+    keywords: ['dashboard', 'admin panel', 'administration panel', 'back office', 'admin dashboard', 'admin interface', 'admin area', 'admin tag'],
+  },
+  {
+    name: 'Content management system',
+    keywords: ['content management system', 'cms', 'content editor', 'website content editor', 'content editing panel'],
   },
   {
     name: 'Booking system',

@@ -6,6 +6,7 @@ import { Logo } from './Logo'
 type Props = { view: View; onNavigate: (view: View) => void }
 
 export function Sidebar({ view, onNavigate }: Props) {
+  const activeView = view === 'project' || view === 'new-project' ? 'projects' : view
   return (
     <aside className="sidebar-gradient hidden text-white lg:sticky lg:top-0 lg:flex lg:h-dvh lg:w-72 lg:shrink-0 lg:flex-col">
       <div className="px-6 pb-7 pt-7"><Logo tagline /></div>
@@ -16,8 +17,8 @@ export function Sidebar({ view, onNavigate }: Props) {
               <button
                 type="button"
                 onClick={() => onNavigate(id)}
-                aria-current={view === id ? 'page' : undefined}
-                className={`flex min-h-12 w-full items-center gap-3 rounded-xl px-4 text-left text-sm font-medium transition-colors focus-visible:outline-brand-300 ${view === id ? 'sidebar-active text-white' : 'text-brand-100 hover:bg-white/10 hover:text-white'}`}
+                aria-current={activeView === id ? 'page' : undefined}
+                className={`flex min-h-12 w-full items-center gap-3 rounded-xl px-4 text-left text-sm font-medium transition-colors focus-visible:outline-brand-300 ${activeView === id ? 'sidebar-active text-white' : 'text-brand-100 hover:bg-white/10 hover:text-white'}`}
               >
                 <Icon size={19} aria-hidden="true" />
                 {label}

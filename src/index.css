@@ -363,3 +363,95 @@
   .qa-card:hover, .qa-card:focus-visible, .qa-card:hover .qa-chevron, .qa-card:focus-visible .qa-chevron { transform: none; }
   .shield-art:hover .shield-ring, .shield-art:hover .shield-badge { transform: none; }
 }
+
+/* v0.9.1: reference dashboard, with compact information hierarchy. */
+@layer base {
+  h1, h2, h3, h4, h5, h6, button, input, select, textarea {
+    font-family: var(--font-sans);
+  }
+}
+.tone-blue { --tone: #5681dd; --tone-ink: #3158ac; }
+:root.dark .tone-blue { --tone: #84a6f1; --tone-ink: #bacfff; }
+
+@layer components {
+  .sidebar-gradient {
+    background: radial-gradient(ellipse at 0% 100%, #29204e 0%, transparent 65%), linear-gradient(160deg, #14132f, #17132f 65%, #21183f);
+  }
+  .sidebar-active {
+    background: linear-gradient(100deg, #6534c9, #3e286f);
+    box-shadow: 0 4px 14px rgb(12 8 35 / 0.16);
+  }
+  .dashboard-welcome {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    min-height: 188px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 22px 26px;
+    box-shadow: var(--shadow-card);
+    background: linear-gradient(110deg, var(--tint) 20%, color-mix(in srgb, var(--tint) 76%, #cdb8fa) 100%);
+  }
+  .dashboard-welcome::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    right: -80px;
+    top: -130px;
+    width: 400px;
+    height: 420px;
+    border: 46px solid rgb(139 100 220 / 0.07);
+    border-radius: 45%;
+    transform: rotate(28deg);
+    pointer-events: none;
+  }
+  .welcome-copy { position: relative; z-index: 1; width: 65%; }
+  .welcome-art { position: absolute; right: 12px; bottom: 0; width: 34%; max-width: 360px; pointer-events: none; }
+  .workspace-illustration { display: block; width: 100%; height: auto; }
+  .metric-card { position: relative; min-width: 0; overflow: hidden; padding: 16px; min-height: 143px; }
+  .metric-trend { margin-top: 10px; height: 28px; }
+  .metric-trend .spark { height: 28px; }
+  .qa-grid-card { min-height: 130px; flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; }
+  .qa-grid-card::before { display: none; }
+  .qa-grid-card .qa-chevron { position: absolute; right: 13px; top: 20px; color: var(--accent-ink); }
+  .qa-grid-card .qa-icon { width: 36px; height: 36px; border-radius: 10px; }
+  .sample-strip { border: 1px solid var(--line); border-radius: 16px; padding: 16px 20px; background: linear-gradient(110deg, var(--tint), var(--surface)); }
+  .recent-activity { container-type: inline-size; }
+}
+@container (max-width: 620px) {
+  .recent-activity .analysis-row { align-items: flex-start; padding-inline: 8px; }
+  .recent-activity .analysis-row .row-status-mobile { display: flex; }
+  .recent-activity .analysis-row .row-status-desktop,
+  .recent-activity .analysis-row time { display: none; }
+  .recent-activity .analysis-row .row-mobile-time { display: inline; }
+  .recent-activity .analysis-row .row-request { white-space: normal; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+}
+@media (max-width: 767px) {
+  .dashboard-welcome { min-height: 0; padding: 18px; border-radius: 16px; }
+  .welcome-copy { width: 100%; }
+  .welcome-copy > p:not(:first-child) { max-width: 32rem; }
+  .welcome-art { display: none; }
+  .metric-card { padding: 13px; min-height: 120px; }
+  .metric-trend { height: 20px; margin-top: 8px; }
+  .metric-trend .spark { height: 20px; }
+  .sample-strip { padding: 16px; }
+  .qa-grid-card { min-height: 120px; }
+}
+@media (max-width: 380px) {
+  .welcome-actions { gap: 8px; }
+  .welcome-actions .btn { width: 100%; }
+  .welcome-actions .btn-secondary { min-height: 36px; padding-block: 6px; background: transparent; border-color: transparent; box-shadow: none; }
+  .metric-card { padding: 11px; }
+  .metric-card .metric-tile { width: 28px; height: 32px; }
+  .sample-toggle { width: 100%; }
+}
+@media (max-width: 767px) {
+  .welcome-copy > p:first-child { display: none; }
+  .welcome-copy h2 { margin-top: 0; }
+  .welcome-copy > p:not(:first-child) { line-height: 1.4; }
+  .welcome-actions .btn-secondary { min-height: 32px; padding: 5px 8px; background: transparent; border-color: transparent; box-shadow: none; }
+  .metric-card { min-height: 100px; }
+  .metric-trend { display: none; }
+}
