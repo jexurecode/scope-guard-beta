@@ -12,6 +12,8 @@ import { DashboardPage } from './pages/DashboardPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { MorePage } from './pages/MorePage'
 import { ProjectsPage } from './pages/ProjectsPage'
+import { NewProjectPage } from './pages/NewProjectPage'
+import { ProjectWorkspacePage } from './pages/ProjectWorkspacePage'
 import { SettingsPage } from './pages/SettingsPage'
 
 export default function App() {
@@ -28,18 +30,21 @@ export default function App() {
     setTimeout(() => mainRef.current?.focus({ preventScroll: true }), 0)
   }
   const openAnalysis = (id: string) => { scope.reopen(id); navigate('analysis') }
-  const page = { scope, navigate, openAnalysis }
+  const navigateFromAction = (next: View) => { if (next === 'analysis') scope.reset(); navigate(next) }
+  const page = { scope, navigate: navigateFromAction, openAnalysis }
 
   return (
     <div className="min-h-dvh bg-canvas text-fg">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">Skip to main content</a>
       <div className="lg:flex lg:min-h-dvh">
-        <Sidebar view={view} onNavigate={navigate} />
+        <Sidebar view={view} onNavigate={navigateFromAction} />
         <div className="min-w-0 flex-1">
-          <AppHeader view={view} theme={theme} onToggleTheme={toggleTheme} onNavigate={navigate} data={scope.data} notifications={notifications} onOpenAnalysis={openAnalysis} onSelectProject={scope.selectProject} />
+          <AppHeader view={view} theme={theme} onToggleTheme={toggleTheme} onNavigate={navigateFromAction} data={scope.data} notifications={notifications} onOpenAnalysis={openAnalysis} onSelectProject={scope.selectProject} />
           <main id="main" ref={mainRef} tabIndex={-1} className="mx-auto max-w-[1200px] px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 outline-none sm:px-8 lg:pb-10 lg:pt-7">
             {scope.storageError && <StorageAlert message={scope.storageError} blocked={scope.storageBlocked} onRetry={scope.retrySave} />}
             {view === 'dashboard' && <DashboardPage {...page} />}
+            {view === 'new-project' && <NewProjectPage {...page} />}
+            {view === 'project' && <ProjectWorkspacePage {...page} />}
             {view === 'projects' && <ProjectsPage {...page} />}
             {view === 'analysis' && <AnalysisPage {...page} />}
             {view === 'history' && <HistoryPage {...page} />}
@@ -49,7 +54,7 @@ export default function App() {
           </main>
         </div>
       </div>
-      <BottomNav view={view} onNavigate={navigate} />
+      <BottomNav view={view} onNavigate={navigateFromAction} />
     </div>
   )
 }

@@ -1,9 +1,10 @@
+import { createLocalId } from './local-id'
 import { analyzeScope } from './analysis-engine'
 import type { Analysis } from '../types/analysis'
 import type { SavedAnalysis } from '../types/workspace'
 import type { Workspace } from '../types/workspace'
 
-export const LIMITS = { name: 80, agreement: 20000, request: 5000, reply: 10000 } as const
+export const LIMITS = { name: 80, agreement: 150000, request: 20000, reply: 10000 } as const
 export const WORKSPACE_KEY = 'scope-guard-workspace-v1'
 export const emptyWorkspace = (): Workspace => ({ version: 1, projects: [], analyses: [] })
 
@@ -31,8 +32,9 @@ export function isWorkspace(value: unknown): value is Workspace {
     if (!record(a) || typeof a.id !== 'string' || !a.id || historyIds.has(a.id) || typeof a.projectId !== 'string' || !ids.has(a.projectId) || typeof a.createdAt !== 'string' || !Number.isFinite(Date.parse(a.createdAt)) || !text(a.agreement, LIMITS.agreement) || !text(a.request, LIMITS.request)) return false
     const r = a.result
     if (!record(r) || !['potential-change', 'needs-review'].includes(String(r.status)) || typeof r.title !== 'string' || typeof r.explanation !== 'string' || !text(r.reply, LIMITS.reply) || !Array.isArray(r.detectedChanges)) return false
-    if (!r.detectedChanges.every(c => record(c) && typeof c.feature === 'string' && typeof c.requestEvidence === 'string' && typeof c.explanation === 'string')) return false
+    if (!r.detectedChanges.every(c => record(c) && typeof c.feature === 'string' && typeof c.requestEvidence === 'string' && typeof c.explanation === 'string' && (c.agreementEvidence === undefined || text(c.agreementEvidence, 350)))) return false
     if (r.reviewNotes !== undefined && (!Array.isArray(r.reviewNotes) || !r.reviewNotes.every(note => typeof note === 'string'))) return false
+    if (r.tasks !== undefined && (!Array.isArray(r.tasks) || r.tasks.length > 24 || !r.tasks.every(t => record(t) && text(t.task, LIMITS.request) && ['potential-change', 'likely-covered', 'needs-review'].includes(String(t.verdict)) && text(t.requestEvidence, 1000) && text(t.explanation, 2000) && (t.agreementEvidence === undefined || text(t.agreementEvidence, 350))))) return false
     historyIds.add(a.id)
   }
   return true
@@ -67,7 +69,7 @@ export function createSavedAnalysis(projectId: string, agreement: string, reques
   const error = validateInputs(agreement, request)
   if (error) throw new Error(error)
   return {
-    id: crypto.randomUUID(),
+    id: createLocalId(),
     projectId,
     createdAt: new Date().toISOString(),
     agreement,

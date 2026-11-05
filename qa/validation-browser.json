@@ -1,0 +1,19 @@
+{
+  "passed": 12,
+  "results": [
+    "Fresh workspace defaults to light despite dark system preference",
+    "Sample analysis does not create or modify projects",
+    "TXT: import full 50K+ contract, mixed request and explicit blog exclusion",
+    "DOCX: import full 50K+ contract, mixed request and explicit blog exclusion",
+    "PDF: import full 50K+ contract, mixed request and explicit blog exclusion",
+    "Past-tense blog exclusion retains evidence in the browser",
+    "Edited reply and complete original snapshots survive refresh unchanged",
+    "Project cards are bounded and full agreement is scrollable without truncation",
+    "Duplicate name offers existing request, and separate engagement requires explicit choice",
+    "Import failures preserve the existing agreement; scanned pages are not silently accepted",
+    "Project workspace history remains isolated",
+    "Desktop and mobile: no overflow, usable navigation and manual theme"
+  ],
+  "errors": [],
+  "externalRequests": []
+}

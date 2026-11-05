@@ -36,6 +36,6 @@ describe('dashboard metric cards', () => {
     expect(html).toContain('Projects: no history is tracked for this metric')
     expect(html).toMatch(/Analyses over the past seven days, oldest first: 0, 0, 0, 0, 0, 0, 1/)
     expect(html).toContain('↑ ')
-    for (const tone of ['tone-purple', 'tone-violet', 'tone-amber', 'tone-emerald']) expect(html).toContain(tone)
+    for (const tone of ['tone-purple', 'tone-violet', 'tone-amber', 'tone-blue']) expect(html).toContain(tone)
   })
 })

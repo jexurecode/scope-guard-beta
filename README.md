@@ -1,6 +1,28 @@
+# Current source: v0.9.1 — Mobile HTTP fix RC2
+
+See [RC2 mobile Create Project fix](qa/MOBILE-HTTP-FIX-RC2.md) for current validation (**313 tests**, build/lint, 12 browser groups and insecure-HTTP mobile checks). RC1 results below are historical.
+
+See [stabilization results and repeatable QA](qa/QA-README.md) and the [development roadmap](ROADMAP.md).
+
+See [v0.9.1 UI notes](V0.9.1-UI-POLISH.md) for the current visual changes and browser validation.
+
+See [v0.9 implementation and validation notes](V0.9-ACCURACY-PROJECT-EXPERIENCE.md) for changes, verified results and the Windows checklist. Historical v0.8 notes below are retained for context.
+
 # Scope Guard
 
 An English-first, local prototype for comparing an original agreement with a client request. Results are preliminary keyword-based suggestions requiring human review, not semantic contract understanding or legal analysis.
+
+
+## v0.8 real-contract feedback candidate
+
+- **Document import**: use Import PDF, DOCX or TXT on the Analysis page for agreements or new requests. Parsing happens on-device; only extracted text is stored in existing browser workspace. Uploaded file bytes are not retained or sent to a server. PDF uses PDF.js, and DOCX uses Mammoth. Review the extraction carefully; scanned PDF pages need OCR and tables/headers/embedded material may not extract reliably.
+- **Long agreements**: the agreement limit is now 150,000 characters (request 20,000). Documents are **never silently truncated**. LocalStorage quota still applies and each saved analysis stores an agreement snapshot; export an external copy before relying on browser storage.
+- **Mixed-scope analysis**: displays a separate preliminary verdict for up to 24 explicit tasks, grounded in agreement phrases when possible. Additional tasks are reported as unassessed. `Likely covered` is **not a contract determination**. Unknown tasks remain `Needs review`.
+- **Quick demo**: the Dashboard includes a no-project, no-signup sample. Mock mode remains rules-based (no real AI, no server, no paid API).
+
+### Install on v0.8
+
+New document parsers have been added to package.json. **Run `npm install` once first** (not `npm ci`): this candidate omits the outdated lockfile. Installation resolves `mammoth` and `pdfjs-dist` and generates a new `package-lock.json` on your computer. Commit the updated lock file before deploying. Then run `npm test`, `npm run build` and `npm run lint`. The package registry was unreachable in the build environment used for this candidate, so document parsing and full npm validation must be confirmed locally before release.
 
 ## Development
 
@@ -39,7 +61,7 @@ Projects, agreements, completed analyses, and edited responses are saved only to
 
 Each analysis retains the agreement and request used at analysis time. Reopening history displays those inputs read-only; the response remains editable. Start a new request to return to the project's current agreement. Project deletion removes its history after confirmation. Try example confirms before replacing a nonempty agreement.
 
-Character limits: project names 80, agreements 20,000, requests 5,000, and responses 10,000. Empty or whitespace-only names/analysis inputs are rejected. Persistence failures leave changes in memory and offer a retry. Invalid stored data is not overwritten automatically; replacement requires explicit confirmation. Use one tab for editing: simultaneous changes across tabs are not merged.
+Character limits: project names 80, agreements 150,000, requests 20,000, and responses 10,000. Empty or whitespace-only names/analysis inputs are rejected. Persistence failures leave changes in memory and offer a retry. Invalid stored data is not overwritten automatically; replacement requires explicit confirmation. Use one tab for editing: simultaneous changes across tabs are not merged.
 
 ## Phase status and limitations
 

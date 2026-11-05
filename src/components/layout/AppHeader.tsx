@@ -14,7 +14,7 @@ type Props = { view: View; theme: Theme; onToggleTheme: () => void; onNavigate: 
 type HeaderAction = { label: string; to: View; icon: LucideIcon; primary?: boolean }
 
 const ACTIONS: Partial<Record<View, HeaderAction>> = {
-  projects: { label: 'New analysis', to: 'analysis', icon: Plus, primary: true },
+  projects: { label: 'New project', to: 'new-project', icon: Plus, primary: true },
   history: { label: 'New analysis', to: 'analysis', icon: Plus, primary: true },
   analysis: { label: 'Manage projects', to: 'projects', icon: FolderKanban },
 }

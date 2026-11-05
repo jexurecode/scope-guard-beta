@@ -1,7 +1,7 @@
 import { Ellipsis, FolderKanban, History, LayoutDashboard, ScanSearch, Settings } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-export type View = 'dashboard' | 'projects' | 'analysis' | 'history' | 'settings' | 'more'
+export type View = 'new-project' | 'project' | 'dashboard' | 'projects' | 'analysis' | 'history' | 'settings' | 'more'
 
 export type NavItem = { id: View; label: string; icon: LucideIcon }
 
@@ -24,6 +24,8 @@ export const TAB_ITEMS: readonly NavItem[] = [
 ]
 
 export const PAGE_META: Record<View, { title: string; description: string }> = {
+  'new-project': { title: 'New project', description: 'Start a separate client engagement.' },
+  project: { title: 'Project workspace', description: 'Agreement, client requests and history for this project.' },
   dashboard: { title: 'Dashboard', description: 'Track your projects, analyze requests, and keep scope under control.' },
   projects: { title: 'Projects', description: 'Create projects and keep each original agreement up to date.' },
   analysis: { title: 'New analysis', description: 'Compare a client request with the agreement before you say yes.' },
@@ -34,5 +36,5 @@ export const PAGE_META: Record<View, { title: string; description: string }> = {
 
 /** Settings is reached through the "More" tab on mobile, so that tab stays highlighted. */
 export function tabFor(view: View): View {
-  return view === 'settings' ? 'more' : view
+  return view === 'settings' ? 'more' : view === 'project' || view === 'new-project' ? 'projects' : view
 }
